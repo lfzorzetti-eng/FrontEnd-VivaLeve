@@ -341,6 +341,8 @@ No terminal do Expo: `w` abre na web, `i` no simulador iOS, `a` no emulador Andr
 
 O modo **mock** roda sem back-end: guarda os dados no próprio dispositivo e já vem com dados de exemplo (humor, diário, respiração e duas sessões anteriores).
 
+**Usuário de teste (só no modo mock):** na tela de login, toque em **Entrar com usuário de teste**, ou entre com `teste@pluma.dev` e senha `12345678`. Ele é o dono dos dados de exemplo; qualquer outro email também entra, mas começa vazio.
+
 ```bash
 EXPO_PUBLIC_API_URL=mock npx expo start
 EXPO_PUBLIC_API_URL=https://back-end-vivaleve.onrender.com npx expo start

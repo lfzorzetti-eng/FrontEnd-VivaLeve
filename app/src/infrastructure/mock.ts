@@ -1,12 +1,13 @@
 /**
  * Back-end falso (porta de js/mock-api.js). Implementa a mesma interface de transporte do HTTP.
  * Tudo fica no AsyncStorage, chave "pluma_mock_db". Qualquer email/senha entra. Google não funciona.
+ * O usuário de teste (USUARIO_TESTE) já existe e é o dono dos dados de exemplo (userId 1).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Transporte, Requisicao } from './transporte';
 import { dataLocal } from './helpers';
 import { erroApi } from './erros';
-import { EMOCOES } from '@/entities';
+import { EMOCOES, USUARIO_TESTE } from '@/entities';
 
 const DB_KEY = 'pluma_mock_db';
 const LATENCIA_MS = 150;
@@ -35,6 +36,7 @@ function diasAtras(n: number, hora = 10): Date {
 function semente(): DB {
   const db: DB = { seq: 1, usuarios: [], humor: [], diario: [], respiracao: [], conversas: [], mensagens: [] };
   const id = () => db.seq++;
+  db.usuarios.push({ id: 1, email: USUARIO_TESTE.email, name: USUARIO_TESTE.nome, password: null });
   const humores = ['BEM', 'OTIMO', 'MAIS_OU_MENOS', 'BEM', 'ANSIOSO', 'BEM', 'OTIMO', 'MAL', 'BEM', 'MAIS_OU_MENOS', 'OTIMO', 'BEM'];
   const atividades = [['WORK'], ['EXERCISE', 'FRIENDS'], ['STUDY'], ['FAMILY', 'REST'], ['WORK'], ['READING'], ['HOBBY', 'SLEEP_WELL'], ['WORK'], ['MEDITATION'], ['STUDY'], ['FRIENDS'], ['EXERCISE']];
   humores.forEach((mood, i) => {
@@ -86,7 +88,13 @@ async function carregar(): Promise<DB> {
   try {
     const raw = await AsyncStorage.getItem(DB_KEY);
     const db = raw ? JSON.parse(raw) : null;
-    if (db) return db;
+    if (db) {
+      // banco criado antes do usuário de teste: ele entra como dono dos dados de exemplo, se ninguém for
+      if (!db.usuarios.some((u: any) => u.email === USUARIO_TESTE.email) && !db.usuarios.some((u: any) => u.id === 1)) {
+        db.usuarios.push({ id: 1, email: USUARIO_TESTE.email, name: USUARIO_TESTE.nome, password: null });
+      }
+      return db;
+    }
   } catch { /* banco corrompido: recria */ }
   const db = semente();
   await salvar(db);
@@ -121,7 +129,7 @@ function sessaoDe(u: any) {
   };
 }
 
-/** Todo dado de exemplo nasce com userId 1; o primeiro usuário a entrar fica com ele. */
+/** Todo dado de exemplo nasce com userId 1 (o usuário de teste); quem mais entrar começa vazio. */
 function criarUsuario(db: DB, email: string, name?: string | null) {
   const id = db.usuarios.length === 0 ? 1 : db.seq++;
   const u = { id, email, name: name || email.split('@')[0], password: null };

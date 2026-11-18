@@ -230,6 +230,14 @@ export function fraseDoDia(data: Date = new Date()): Frase {
   return FRASES_MOTIVACIONAIS[dia % FRASES_MOTIVACIONAIS.length];
 }
 
+// ------------------------------------------------------------ modo mock
+
+/**
+ * Usuário de teste do modo mock (EXPO_PUBLIC_API_URL=mock): já nasce dono dos dados de exemplo
+ * (humor, diário, respiração e sessões). O mock aceita qualquer senha.
+ */
+export const USUARIO_TESTE = congelar({ email: 'teste@pluma.dev', senha: '12345678', nome: 'Teste' });
+
 // ------------------------------------------------------------ regras fixas
 
 export const REGRAS = congelar({

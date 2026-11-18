@@ -1,4 +1,5 @@
 import type { User } from '@/models';
+import { USUARIO_TESTE } from '@/entities';
 import { MODO_API } from './config';
 import { erroApi } from './erros';
 import { auth } from './recursos/auth';
@@ -10,10 +11,10 @@ import { ia } from './recursos/ia';
 import { respiracao } from './recursos/respiracao';
 import { usuarios } from './recursos/usuarios';
 
-/** Só no mock: entra como teste@pluma.dev (usado pelos testes visuais). */
+/** Só no mock: entra com o usuário de teste (botão da tela de login e testes visuais). */
 export async function entrarComoTeste(): Promise<User> {
   if (MODO_API !== 'mock') throw erroApi('entrarComoTeste só funciona com a API mock');
-  return auth.login('teste@pluma.dev', '12345678');
+  return auth.login(USUARIO_TESTE.email, USUARIO_TESTE.senha);
 }
 
 export const api = { auth, usuarios, estatisticas, humor, diario, respiracao, historico, ia };

@@ -2,9 +2,9 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { REGRAS } from '@/entities/catalogo';
+import { REGRAS, USUARIO_TESTE } from '@/entities/catalogo';
 import { type EstadoLogin, MENSAGENS_LOGIN } from '@/entities/estados';
-import { api, GOOGLE_CLIENT_ID } from '@/infrastructure';
+import { api, entrarComoTeste, GOOGLE_CLIENT_ID, MODO_API } from '@/infrastructure';
 import type { ApiError } from '@/models';
 
 import { carregarGoogleIdentity } from './googleIdentity';
@@ -136,6 +136,20 @@ export function useLoginController() {
     }
   }, [carregando, estado.modo, email, senha, nome, router]);
 
+  /** Só no modo mock: entra com o usuário de teste, que já tem os dados de exemplo. */
+  const entrarTeste = useCallback(async () => {
+    if (carregando || MODO_API !== 'mock') return;
+    const modo = estado.modo;
+    setEstado({ tipo: 'enviando', modo });
+    try {
+      await entrarComoTeste();
+      setEstado({ tipo: 'editando', modo });
+      router.replace('/');
+    } catch (e) {
+      setEstado({ tipo: 'erro', modo, mensagem: mensagemLogin(e as ApiError, false) });
+    }
+  }, [carregando, estado.modo, router]);
+
   /** Botão próprio do Google: só aparece enquanto o botão oficial não está pronto. */
   const clicarGoogle = useCallback(() => {
     if (Platform.OS !== 'web') {
@@ -153,6 +167,7 @@ export function useLoginController() {
     cadastro, nome, setNome, email, setEmail, senha, setSenha,
     senhaVisivel, alternarSenha, erro, erroSocial, carregando,
     alternarModo, definirModo, enviar, clicarGoogle,
+    entrarTeste, modoMock: MODO_API === 'mock', emailTeste: USUARIO_TESTE.email,
     googleWeb: Platform.OS === 'web' && Boolean(GOOGLE_CLIENT_ID),
     googleBotaoPronto, registrarContainerGoogle,
   };

@@ -35,6 +35,17 @@ describe('auth', () => {
     expect(e.status).toBe(401);
     expect(e.semLogin).toBe(true);
   });
+  it('usuário de teste já tem os dados de exemplo; outro usuário começa vazio', async () => {
+    await entrarComoTeste();
+    expect((await api.humor.todos()).length).toBeGreaterThan(0);
+    expect(await api.diario.listar()).toHaveLength(3);
+    expect(await api.ia.sessoes()).toHaveLength(2);
+    await api.auth.sair();
+    await api.auth.login('outra.pessoa@pluma.dev', 'qualquer');
+    expect(await api.humor.todos()).toHaveLength(0);
+    expect(await api.ia.sessoes()).toHaveLength(0);
+  });
+
   it('entrarComoTeste vira usuário 1 e fica logado', async () => {
     const u = await entrarComoTeste();
     expect(u).toMatchObject({ id: 1, email: 'teste@pluma.dev' });

@@ -213,6 +213,21 @@ export function FormularioLogin({ c, centralizado }: FormularioLoginProps) {
             {erroSocial}
           </Text>
         ) : null}
+        {c.modoMock ? (
+          <View style={{ gap: spacing.xs }}>
+            <Button
+              label="Entrar com usuário de teste"
+              variant="ghost"
+              fullWidth
+              onPress={c.entrarTeste}
+              disabled={c.carregando}
+              testID="login-teste"
+            />
+            <Text tone="muted" variant="caption" align="center">
+              Modo demonstração: {c.emailTeste}, já com dados de exemplo.
+            </Text>
+          </View>
+        ) : null}
 
         <Text tone="muted" variant="caption" align="center">
           Ao entrar, você concorda com os Termos de Uso e a Política de Privacidade.

@@ -15,7 +15,7 @@ export const TELAS = [
 
 export async function entrar(page: Page) {
   await page.goto('/login');
-  await page.getByTestId('login-email').fill('teste@pluma.app');
+  await page.getByTestId('login-email').fill('teste@pluma.dev');
   await page.getByTestId('login-senha').fill('senha12345');
   await page.getByTestId('login-entrar').click();
   await expect(page).not.toHaveURL(/login/);
